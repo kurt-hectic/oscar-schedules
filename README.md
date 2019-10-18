@@ -26,9 +26,17 @@ s1.hour_to = 23
 s1.min_to = 30
 s1.interval = 60*30
 
-r1 = number_expected([s1,],lower_boundary,upper_boundary)
+s2 = Schedule.create_default_schedule() # custom schedule with 45min observations between 1:30 and 22:30
+s2.hour_from = 1
+s2.min_from = 30
+s2.hour_to = 22
+s2.min_to = 30
+s2.interval = 60*45
 
-print("between {} and {} we expect {} observations with the schedule {}".format(lower_boundary,upper_boundary,r1,s1))
+
+r1 = number_expected([s1,s2],lower_boundary,upper_boundary)
+
+print("between {} and {} we expect {} observations with the schedules {}".format(lower_boundary,upper_boundary,r1, [ str(s) for s in [s1,s2] ]  ))
 ```
 
 
