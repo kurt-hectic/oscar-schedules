@@ -18,6 +18,18 @@ s = Schedule.create_default_schedule() # create default schedule 7/24 around the
 r = number_expected([s,],lower_boundary,upper_boundary)
 
 print("between {} and {} we expect {} observations with the schedule {}".format(lower_boundary,upper_boundary,r,s))
+
+s1 = Schedule.create_default_schedule() # custom schedule with 30min observations between 0:30 and 23:30
+s1.hour_from = 0
+s1.min_from = 30
+s1.hour_to = 23
+s1.min_to = 30
+s1.interval = 60*30
+
+r1 = number_expected([s1,],lower_boundary,upper_boundary)
+
+print("between {} and {} we expect {} observations with the schedule {}".format(lower_boundary,upper_boundary,r1,s1))
 ```
+
 
 In order to test the package run `python -m unittest discover -s tests`
