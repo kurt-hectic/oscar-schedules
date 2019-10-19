@@ -31,7 +31,7 @@ class Schedule:
             return None
     
     def compute_overlap_periods(self,lower,upper):
-        logger.debug("computing overlap between schedule and period: l:{}, u:{}, month from:{} month to:{} ".format(lower,upper,self.month_from,self.month_to))
+        logger.debug("computing overlap between schedule {} and period: l:{}, u:{}, month from:{} month to:{} ".format(self,lower,upper,self.month_from,self.month_to))
         
         # compute candidate schedules
         schedules = []

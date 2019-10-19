@@ -158,7 +158,7 @@ class TestInvertedSchedules(unittest.TestCase):
 class TestIndianSchedules(unittest.TestCase):
     def test_schedule(self):
         """
-        Test schedules of stations where there is no reporting interval
+        Test schedules of stations with same starting hour
         """
 
         year = 2019
@@ -180,4 +180,4 @@ class TestIndianSchedules(unittest.TestCase):
 
         r = number_expected([s,],lower_boundary,upper_boundary)
 
-        self.assertEqual(r, 1 )
+        self.assertEqual(r, 0 )

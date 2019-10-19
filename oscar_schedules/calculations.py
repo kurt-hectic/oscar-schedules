@@ -46,7 +46,9 @@ def pre_process_weird_schedules(schedules):
     
     for s in schedules:
         
-        if s.hour_from >= s.hour_to or ( s.hour_from == s.hour_to and s.min_from > s.min_to  ): # if the schedule is weird
+        if s.hour_from > s.hour_to or ( s.hour_from == s.hour_to and s.min_from > s.min_to  ): # if the schedule is weird
+        
+            logger.debug("WEIRD: {}  ".format(s))
             
             if s.month_from + s.month_to != 13 or s.week_from + s.week_to != 8:
                 print("error: schedule invalid. {}".format(s))
@@ -91,7 +93,7 @@ def number_expected(schedules,lower,upper):
     for s in schedules:
         periods += s.compute_overlap_periods(lower,upper)
     
-    logger.debug("step 1: overlap periods: {}".format(periods))
+    logger.debug("step 1: calculating overlap periods for: {}".format(periods))
     # check if periods overlap
     overlap = [False] * len(periods)
     for i in range(0,len(periods)):
@@ -101,7 +103,7 @@ def number_expected(schedules,lower,upper):
                 overlap[j] = True
                 break
                 
-    logger.debug("overlap: {}".format(overlap))        
+    logger.debug("overlap is: {}".format(overlap))        
     # calculate number observations 
     ret = 0
     i = 0
