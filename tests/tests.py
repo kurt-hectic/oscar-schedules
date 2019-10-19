@@ -22,7 +22,7 @@ class TestDefaultSchdule(unittest.TestCase):
         lower_boundary = mydate - timedelta(hours=3)
         upper_boundary = mydate + timedelta(hours=3)
 
-        s = Schedule.create_default_schedule() # default schedule has 6h observations
+        s = Schedule() # default schedule has 6h observations
 
         r = number_expected([s],lower_boundary,upper_boundary)
 
@@ -45,21 +45,21 @@ class TestThreeSchdules(unittest.TestCase):
         lower_boundary = mydate - timedelta(hours=3)
         upper_boundary = mydate + timedelta(hours=3)
 
-        s1 = Schedule.create_default_schedule()
+        s1 = Schedule()
         s1.hour_from = 0
         s1.min_from = 30
         s1.hour_to = 23
         s1.min_to = 30
         s1.interval = 60*30
 
-        s2 = Schedule.create_default_schedule()
+        s2 = Schedule()
         s2.hour_from = 0
         s2.min_from = 30
         s2.hour_to = 23
         s2.min_to = 30
         s2.interval = 60*60
 
-        s3 = Schedule.create_default_schedule()
+        s3 = Schedule()
         s3.hour_from = 22
         s3.min_from = 0
         s3.hour_to = 23
@@ -87,10 +87,10 @@ class TestTwoSchedules(unittest.TestCase):
         lower_boundary = mydate - timedelta(hours=3)
         upper_boundary = mydate + timedelta(hours=3)
 
-        s4 = Schedule.create_default_schedule()
+        s4 = Schedule()
         s4.interval = 60*30
 
-        s5 = Schedule.create_default_schedule()
+        s5 = Schedule()
         s5.interval = 60*45
 
         r = number_expected([s4,s5],lower_boundary,upper_boundary)
@@ -115,10 +115,10 @@ class TestECMWFSchedules(unittest.TestCase):
         lower_boundary = mydate - timedelta(hours=3)
         upper_boundary = mydate + timedelta(hours=3)
 
-        s4 = Schedule.create_default_schedule()
+        s4 = Schedule()
         s4.interval = 60*30
 
-        s5 = Schedule.create_default_schedule()
+        s5 = Schedule()
         s5.interval = 60*45
 
         r = number_expected([s4,s5],lower_boundary,upper_boundary)
@@ -142,7 +142,7 @@ class TestInvertedSchedules(unittest.TestCase):
         lower_boundary = mydate - timedelta(hours=3)
         upper_boundary = mydate + timedelta(hours=3)
 
-        s = Schedule.create_default_schedule()
+        s = Schedule()
         s.hour_from = 22
         s.min_from = 0
         s.hour_to = 21
@@ -152,3 +152,32 @@ class TestInvertedSchedules(unittest.TestCase):
         r = number_expected([s,],lower_boundary,upper_boundary)
 
         self.assertEqual(r, 6 )
+        
+        
+        
+class TestIndianSchedules(unittest.TestCase):
+    def test_schedule(self):
+        """
+        Test schedules of stations where there is no reporting interval
+        """
+
+        year = 2019
+        month = 3
+        day = 25 
+        hour = 0
+
+        mydate = datetime.datetime(year, month, day,hour)
+
+        lower_boundary = mydate - timedelta(hours=3)
+        upper_boundary = mydate + timedelta(hours=3)
+
+        s = Schedule()
+        s.hour_from = 3
+        s.min_from = 0
+        s.hour_to = 3
+        s.min_to = 59
+        s.interval = 60*60*6 
+
+        r = number_expected([s,],lower_boundary,upper_boundary)
+
+        self.assertEqual(r, 1 )

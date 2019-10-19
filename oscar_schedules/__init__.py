@@ -1,3 +1,4 @@
 from oscar_schedules.schedule import Schedule
 from oscar_schedules.calculations import number_expected
 
+from oscar_schedules.utils import oscar2schedule
