@@ -181,3 +181,32 @@ class TestIndianSchedules(unittest.TestCase):
         r = number_expected([s,],lower_boundary,upper_boundary)
 
         self.assertEqual(r, 0 )
+        
+        
+        
+class TestChineseSchedules(unittest.TestCase):
+    def test_schedule(self):
+        """
+        Test schedules of Chinese stations reported by Cristina (XINGREN , Kuqa )
+        """
+
+        year = 2019
+        month = 3
+        day = 25 
+        hour = 0
+
+        mydate = datetime.datetime(year, month, day,hour)
+
+        lower_boundary = mydate - timedelta(hours=3)
+        upper_boundary = mydate + timedelta(hours=3)
+
+        s = Schedule()
+        s.hour_from = 0
+        s.min_from = 0
+        s.hour_to = 21
+        s.min_to = 59
+        s.interval = 60*60*3 
+
+        r = number_expected([s,],lower_boundary,upper_boundary)
+
+        self.assertEqual(r, 2 )

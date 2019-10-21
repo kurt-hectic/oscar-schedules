@@ -78,7 +78,7 @@ class Schedule:
     
     def __init__(self,month_from=1,week_from=1,hour_from=0,min_from=0,month_to=12,week_to=7,hour_to=23,min_to=59,interval=60*60*6,international=True,status=STATUS_OP):
 
-        if int(interval) == 0:
+        if not interval or int(interval) == 0:
             raise ValueError("interval cannot be 0 and must be a number")
 
         self.month_from=int(month_from)
