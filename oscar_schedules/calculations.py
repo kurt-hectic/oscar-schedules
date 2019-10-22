@@ -1,11 +1,12 @@
-import oscar_schedules.schedule
 import datetime
 import math
+import fractions
 import copy
 import logging
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 logger = logging.getLogger()
+
 
 def lcm_mult(a):
     if len(a) < 2:
@@ -17,7 +18,7 @@ def lcm_mult(a):
         
         
 def lcm(a, b):
-    return abs(a*b) // math.gcd(a, b)
+    return abs(a*b) // fractions.gcd(a, b)
     
 
 def generate_and_count(overlap_periods):
@@ -26,7 +27,7 @@ def generate_and_count(overlap_periods):
         observations = []
         for op in overlap_periods:
             date_generated = [op['from'] + datetime.timedelta(seconds=x*op['interval']) for x in 
-                              range(0, math.ceil((op['to']-op['from']).total_seconds() /  op['interval'] ))  ]
+                              range(0, int(math.ceil((op['to']-op['from']).total_seconds() /  op['interval'] )))  ]
             observations += date_generated
             logger.debug("obs:{}".format(date_generated))
         
