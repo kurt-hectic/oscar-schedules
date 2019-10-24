@@ -27,7 +27,7 @@ def oscar2schedule(row):
     except ValueError:
         min_from = 0
         min_to = 59
-
+    interval = int(row["TEMP_REP_INTERVAL_NU"])
     if interval == 0:
         raise ValueError("temporal reporting interval cannot be 0")
 
