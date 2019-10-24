@@ -1,4 +1,4 @@
-from oscar_schedules.schedule import Schedule
+from .schedule import Schedule
 
 
 def oscar2schedule(row):
