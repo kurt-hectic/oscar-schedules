@@ -155,10 +155,10 @@ def number_expected(schedules,lower,upper):
                     freq_a = overlap_periods[0]['interval'] 
                     freq_b = overlap_periods[1]['interval']
 
-                    nr_a = (end_a - start_a).total_seconds()  / freq_a
-                    nr_b = (end_b - start_b).total_seconds() / freq_b
+                    nr_a = math.ceil((end_a - start_a).total_seconds()  / freq_a)
+                    nr_b = math.ceil((end_b - start_b).total_seconds() / freq_b)
 
-                    nr_dupes = (end_a - start_a).total_seconds() / lcm(freq_a,freq_b)
+                    nr_dupes = math.ceil((end_a - start_a).total_seconds() / lcm(freq_a,freq_b))
                     logger.debug("nr_a: {} , nr_b: {} , freq_a:{} , freq_b:{}".format(nr_a,nr_b,freq_a,freq_b))
 
                     ret += nr_a+nr_b-nr_dupes
@@ -176,15 +176,15 @@ def number_expected(schedules,lower,upper):
                     freq_b = overlap_periods[1]['interval']
                     freq_c = overlap_periods[2]['interval']
 
-                    nr_a = (end_a - start_a).total_seconds()  / freq_a
-                    nr_b = (end_b - start_b).total_seconds() / freq_b
-                    nr_c = (end_c - start_c).total_seconds() / freq_c
+                    nr_a = math.ceil((end_a - start_a).total_seconds()  / freq_a)
+                    nr_b = math.ceil((end_b - start_b).total_seconds() / freq_b)
+                    nr_c = math.ceil((end_c - start_c).total_seconds() / freq_c)
 
-                    nr_dupes_ab = (end_a - start_a).total_seconds() / lcm(freq_a,freq_b)
-                    nr_dupes_ac = (end_a - start_a).total_seconds() / lcm(freq_a,freq_c)
-                    nr_dupes_bc = (end_a - start_a).total_seconds() / lcm(freq_b,freq_c)
+                    nr_dupes_ab = math.ceil((end_a - start_a).total_seconds() / lcm(freq_a,freq_b))
+                    nr_dupes_ac = math.ceil((end_a - start_a).total_seconds() / lcm(freq_a,freq_c))
+                    nr_dupes_bc = math.ceil((end_a - start_a).total_seconds() / lcm(freq_b,freq_c))
 
-                    nr_dupes_abc = (end_a - start_a).total_seconds() / lcm_mult([freq_a,freq_b,freq_c])
+                    nr_dupes_abc = math.ceil((end_a - start_a).total_seconds() / lcm_mult([freq_a,freq_b,freq_c]))
 
                     ret +=  (nr_a + nr_b + nr_c) - (nr_dupes_ab + nr_dupes_ac + nr_dupes_bc) + nr_dupes_abc
 

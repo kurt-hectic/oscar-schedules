@@ -210,3 +210,84 @@ class TestChineseSchedules(unittest.TestCase):
         r = number_expected([s,],lower_boundary,upper_boundary)
 
         self.assertEqual(r, 2 )
+        
+        
+class TestChineseDuplicatedSchedules(unittest.TestCase):
+    def test_schedule(self):
+        """
+        Test schedules of Chinese stations reported by Cristina (XINGREN , Kuqa ), where schedules are duplicated
+        """
+
+        year = 2019
+        month = 3
+        day = 25 
+        hour = 0
+
+        mydate = datetime.datetime(year, month, day,hour)
+
+        lower_boundary = mydate - timedelta(hours=3)
+        upper_boundary = mydate + timedelta(hours=3)
+
+        s1 = Schedule()
+        s1.hour_from = 0
+        s1.min_from = 0
+        s1.hour_to = 21
+        s1.min_to = 59
+        s1.interval = 60*60*3 
+
+        s2 = Schedule()
+        s2.hour_from = 0
+        s2.min_from = 0
+        s2.hour_to = 21
+        s2.min_to = 59
+        s2.interval = 60*60*3 
+
+        r = number_expected([s1,s2],lower_boundary,upper_boundary)
+
+        self.assertEqual(r, 2 )
+        
+        
+class TestChineseTriplicatedSchedules(unittest.TestCase):
+    def test_schedule(self):
+        """
+        Test schedules of Chinese stations reported by Cristina (XINGREN , Kuqa ), where schedules are duplicated
+        """
+
+        year = 2019
+        month = 3
+        day = 25 
+        hour = 0
+
+        mydate = datetime.datetime(year, month, day,hour)
+
+        lower_boundary = mydate - timedelta(hours=3)
+        upper_boundary = mydate + timedelta(hours=3)
+
+        s1 = Schedule()
+        s1.hour_from = 0
+        s1.min_from = 0
+        s1.hour_to = 21
+        s1.min_to = 59
+        s1.interval = 60*60*3 
+
+        s2 = Schedule()
+        s2.hour_from = 0
+        s2.min_from = 0
+        s2.hour_to = 21
+        s2.min_to = 59
+        s2.interval = 60*60*3 
+
+        s3 = Schedule()
+        s3.hour_from = 0
+        s3.min_from = 0
+        s3.hour_to = 21
+        s3.min_to = 59
+        s3.interval = 60*60*3 
+
+
+        r = number_expected([s1,s2,s3],lower_boundary,upper_boundary)
+
+        self.assertEqual(r, 2 )
+        
+        
+    
