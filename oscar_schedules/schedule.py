@@ -82,7 +82,7 @@ class Schedule:
 
         return schedules
 
-    def create_default_schedule():
+    def create_default_schedule(self):
 
         return Schedule()
 
