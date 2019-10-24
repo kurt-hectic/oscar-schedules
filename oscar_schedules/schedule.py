@@ -102,7 +102,7 @@ class Schedule:
         hour_to=23,
         min_to=59,
         interval=60 * 60 * 3,
-        international=True,
+        international=1,
         status=STATUS_OP,
     ):
 
