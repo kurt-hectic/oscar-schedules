@@ -26,7 +26,7 @@ class TestDefaultSchdule(unittest.TestCase):
 
         r = number_expected([s],lower_boundary,upper_boundary)
 
-        self.assertEqual(r, 1 )
+        self.assertEqual(r, 2 )
         
         
 class TestThreeSchdules(unittest.TestCase):
