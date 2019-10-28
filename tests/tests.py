@@ -151,7 +151,7 @@ class TestInvertedSchedules(unittest.TestCase):
 
         r = number_expected([s,],lower_boundary,upper_boundary)
 
-        self.assertEqual(r, 6 )
+        self.assertEqual(r, 5 )
         
         
         
@@ -290,4 +290,118 @@ class TestChineseTriplicatedSchedules(unittest.TestCase):
         self.assertEqual(r, 2 )
         
         
-    
+class TestRadiosondeDefaultSchedules(unittest.TestCase):
+    def test_schedule(self):
+        """
+        Test schedules for default Radiosonde schedules , where we have one observation at 0 and another at 12
+        """
+
+        year = 2019
+        month = 3
+        day = 25 
+        hour = 0
+
+        mydate = datetime.datetime(year, month, day,hour)
+
+        lower_boundary = mydate - timedelta(hours=3)
+        upper_boundary = mydate + timedelta(hours=3)
+
+        s1 = Schedule()
+        s1.hour_from = 21
+        s1.min_from = 0
+        s1.hour_to = 3
+        s1.min_to = 0
+        s1.interval = 60*60*6 
+
+        r = number_expected([s1,],lower_boundary,upper_boundary)
+        
+        self.assertEqual(r, 1 )
+   
+        hour = 12
+        mydate = datetime.datetime(year, month, day,hour)
+
+        lower_boundary = mydate - timedelta(hours=3)
+        upper_boundary = mydate + timedelta(hours=3)
+
+        s1 = Schedule()
+        s1.hour_from = 9
+        s1.min_from = 0
+        s1.hour_to = 15
+        s1.min_to = 0
+        s1.interval = 60*60*6 
+
+        r = number_expected([s1,],lower_boundary,upper_boundary)
+        
+        self.assertEqual(r, 1 )
+   
+class TestUnalignedWeirdSchedules(unittest.TestCase):
+    def test_schedule(self):
+        """
+        Test "weird" schedules that is not aligned
+        """
+
+        year = 2019
+        month = 3
+        day = 25 
+        hour = 0
+
+        mydate = datetime.datetime(year, month, day,hour)
+
+        lower_boundary = mydate - timedelta(hours=3)
+        upper_boundary = mydate + timedelta(hours=3)
+
+        s1 = Schedule()
+        s1.hour_from = 22
+        s1.min_from = 30
+        s1.hour_to = 1
+        s1.min_to = 30
+        s1.interval = 60*60*1 
+
+        r = number_expected([s1,],lower_boundary,upper_boundary)
+        
+        self.assertEqual(r, 3 )
+        
+        
+        # add additional schedule that overlaps
+        s2 = Schedule()
+        s2.hour_from = 1
+        s2.min_from = 0
+        s2.hour_to = 6
+        s2.min_to = 00
+        s2.interval = 60*60*1 
+        
+        
+        r = number_expected([s1,s2],lower_boundary,upper_boundary)
+        
+        self.assertEqual(r, 5 )
+        
+        
+        # add additional schedule that overlaps
+        s3 = Schedule()
+        s3.hour_from = 0
+        s3.min_from = 0
+        s3.hour_to = 6
+        s3.min_to = 00
+        s3.interval = 60*30 
+
+        r = number_expected([s1,s3],lower_boundary,upper_boundary)
+        
+        self.assertEqual(r, 8 )
+        
+        
+        ####
+        
+        
+        s1 = Schedule()
+        s1.hour_from = 22
+        s1.min_from = 15
+        s1.hour_to = 1
+        s1.min_to = 30
+        s1.interval = 60*60*1 
+        
+        r = number_expected([s1,],lower_boundary,upper_boundary)
+        
+        self.assertEqual(r, 4 )
+        
+        
+        

@@ -51,7 +51,7 @@ def pre_process_weird_schedules(schedules):
         
             logger.debug("WEIRD: {}  ".format(s))
             
-            if s.month_from + s.month_to != 13 or s.week_from + s.week_to != 8:
+            if s.month_from + s.month_to != 13 or s.week_from + s.week_to != 8: # the schedule needs to be continous
                 print("error: schedule invalid. {}".format(s))
                 continue
             
@@ -67,9 +67,40 @@ def pre_process_weird_schedules(schedules):
             s2.hour_from = 0
             s2.min_from = 0
             
-            ret.append(s1)
-            ret.append(s2)
-                            
+            # calculate difference
+            d1 = datetime.datetime(1981,1,25,s1.hour_from,s1.min_from)
+            d2 = datetime.datetime(1981,1,25,s1.hour_to,s1.min_to)
+            
+            d3 = datetime.datetime(1981,1,26,s2.hour_from,s2.min_from)
+            d4 = datetime.datetime(1981,1,26,s2.hour_to,s2.min_to)
+
+            difference = (d4-d1).total_seconds()
+            logger.debug("weir schedule: difference between {} {} is: {}".format(d1,d4,difference))
+            
+            # the reporting interval is larger or equal to the interval between the lower and upper endpoints of the new "weird" schedule
+            if s1.interval >= difference : 
+                ret.append(s1) # we append only one, because the reporting interval only fits once
+            else : # the reporting interval potentially fits more than once
+            
+                difference2 = (d2-d1).total_seconds() + 60
+                remainder = s1.interval - (difference2 % s1.interval)  
+                
+                logger.debug("d1: {} d2: {}, interval:{} , diff: {}".format(d1,d2,s1.interval,difference2))
+            
+                if remainder != 0: # need to offset because schedules do not align nicely       
+                    offset_hour = int(math.floor(remainder / (60*60)))
+                    offset_min = int((remainder % (60*60) ) / 60 )
+
+                    logger.debug("weird schedule: remainder:{} offset h:{} min: {}".format(remainder,offset_hour,offset_min))
+                    
+                    s2.hour_from = s2.hour_from + offset_hour
+                    s2.min_from = s2.min_from + offset_min
+
+                ret.append(s1)
+                ret.append(s2)
+
+
+
         else:
             ret.append( s )
      
