@@ -41,3 +41,28 @@ print("between {} and {} we expect {} observations with the schedules {}".format
 
 
 In order to test the package run `python -m unittest discover -s tests`
+
+
+The library can now fetch schedules directly from OSCAR
+```python
+from oscar_schedules import Schedule , number_expected, getSchedules
+from datetime import timedelta, datetime
+import logging
+import os
+
+#logging.basicConfig(level=os.environ.get("LOGLEVEL", "DEBUG"))
+
+mydate = datetime(2019, 3, 25,18) # the date and hour for which we calculate the number of expected
+
+# +- 3h interval around the date
+lower_boundary = mydate - timedelta(hours=3) 
+upper_boundary = mydate + timedelta(hours=3)
+
+print("checking number expected for interval {} to {}".format(lower_boundary,upper_boundary))
+
+infos = getSchedules("0-20000-0-52787",[224,])
+
+for obs_id,schedules in infos.items():
+    e = number_expected(schedules,lower_boundary,upper_boundary)
+    print("variable: {} expected: {} for schedules {}".format(obs_id,e,  ",".join([ str(s) for s in schedules ])  ))
+```

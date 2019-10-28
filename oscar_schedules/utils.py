@@ -1,5 +1,63 @@
+import requests
+import logging
+
 from .schedule import Schedule
 
+def getSchedules(wigos_id,variables=[]):
+
+    url = "https://oscar.wmo.int/surface/rest/api/search/station?wigosId={}".format(wigos_id)
+    r = requests.get(url).json()
+    
+    if len(r) != 1  :
+        logging.error("{} not unique.. got {} results".format(wigos_id,len(r)))
+
+    internal_id = r[0]['id']
+    
+    logging.debug("got inernal id {} for {}".format(internal_id,wigos_id))
+    
+    url_obs = "https://oscar.wmo.int/surface/rest/api/stations/stationObservations/{}".format(internal_id)
+    r = requests.get(url_obs).json()
+
+    if not isinstance(variables,list):
+        variables = [variables,]
+
+    
+    # get observation ids and filter by operational status and variable, if requested
+    observation_ids = [ obs['id'] for obs in r if (  any(  prog_s["declaredStatusName"] == "Operational" for prog in obs["programs"] for prog_s in prog["stationProgramStatuses"] ) and (  len(variables) == 0 or obs['variableId'] in variables ) ) ]
+      
+    
+    observations = {}
+    
+    for obs_id in observation_ids:
+        url_depl = "https://oscar.wmo.int/surface/rest/api//stations/deployments/{}".format(obs_id)
+        r = requests.get(url_depl).json()
+        
+        observations[obs_id] = [ json2schedule(dg) for depl in r for dg in depl["dataGenerations"] if ( "isInternationalExchange" in dg["reporting"] and dg["reporting"]["isInternationalExchange"] )  ]
+
+    return observations
+
+
+def json2schedule(dg):
+
+    schedule = dg["schedule"]
+    reporting = dg["reporting"]
+
+    s = Schedule(
+        schedule["monthSince"],
+        schedule["weekdaySince"],
+        schedule["hourSince"],
+        schedule["minuteSince"],
+        schedule["monthTill"],
+        schedule["weekdayTill"],
+        schedule["hourTill"],
+        schedule["minuteTill"],
+        reporting["temporalReportingIntervalDB"],
+        reporting["isInternationalExchange"], # always true, since we filter
+        "operational" # always operational, since we filter
+
+    )
+    
+    return s
 
 def oscar2schedule(row):
 
