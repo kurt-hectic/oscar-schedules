@@ -1,5 +1,6 @@
 import datetime
 import logging
+import calendar
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 logger = logging.getLogger()
@@ -87,8 +88,22 @@ class Schedule:
         return Schedule()
 
     def __str__(self):
-        return "from {month_from}/{week_from} {hour_from}:{min_from}  to: {month_to}/{week_to} {hour_to}:{min_to} interval: {interval}".format(
-            **self.__dict__
+    
+        temp = {
+            'month_from' : calendar.month_abbr[self.month_from],
+            'month_to' : calendar.month_abbr[self.month_to],
+            'week_from' : calendar.day_abbr[self.week_from-1],
+            'week_to' : calendar.day_abbr[self.week_to-1],
+            'hour_from' : self.hour_from,
+            'hour_to' : self.hour_to,
+            'min_from' : self.min_from,
+            'min_to' : self.min_to,
+            'interval' : str(datetime.timedelta(seconds=self.interval))
+            
+        }
+    
+        return "from {month_from}-{month_to}/{week_from}-{week_to}/{hour_from}:{min_from}-{hour_to}:{min_to} {interval}".format(
+            **temp
         )
 
     def __init__(
