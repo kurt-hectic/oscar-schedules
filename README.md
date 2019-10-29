@@ -61,10 +61,10 @@ upper_boundary = mydate + timedelta(hours=3)
 print("checking number expected for interval {} to {}".format(lower_boundary,upper_boundary))
 
 infos = getSchedules("0-20000-0-52787",[224,])
+observations = infos["observations"]
 
-infos = getSchedules("0-20000-0-06610" )
 
-for var_id,info in infos.items():
+for var_id,info in observations.items():
     schedules = info["schedules"]
     name = info["variableName"]
     

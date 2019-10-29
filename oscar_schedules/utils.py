@@ -19,6 +19,7 @@ def getSchedules(wigos_id,variables=[]):
         raise ValueError(msg)
 
     internal_id = r[0]['id']
+    name = r[0]['name']
     
     logging.debug("got inernal id {} for {}".format(internal_id,wigos_id))
     
@@ -58,8 +59,9 @@ def getSchedules(wigos_id,variables=[]):
 
         observations[obs["var_id"]] = { 'variableName' :  obs['name'] , 'schedules' : schedules }
         
+    infos = {'name':name,'observations':observations}
 
-    return observations
+    return infos
 
 
 def json2schedule(dg):
