@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-from distutils.core import setup
+from setuptools import setup, find_packages
+
 
 setup(
     name='oscar-schedules',
@@ -9,7 +10,7 @@ setup(
     author='Timo Proescholdt',
     author_email='tproescholdt@wmo.int',
     url='https://github.com/kurt-hectic/oscar-schedules',
-    packages=['oscar-schedules'],
+    packages=find_packages(),
     install_requires=[
         'setuptools',
         'requests',
