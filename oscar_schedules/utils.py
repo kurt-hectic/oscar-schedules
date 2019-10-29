@@ -30,16 +30,34 @@ def getSchedules(wigos_id,variables=[]):
 
     
     # get observation ids and filter by operational status and variable, if requested
-    observation_ids = [ obs['id'] for obs in r if (  any(  prog_s["declaredStatusName"] == "Operational" for prog in obs["programs"] for prog_s in prog["stationProgramStatuses"] ) and (  len(variables) == 0 or obs['variableId'] in variables ) ) ]
+    observation_ids = []
+    for obs in r:
+        logging.debug("checking {}".format(obs))
+        if not any(  prog_s["declaredStatusName"] == "Operational" for prog in obs["programs"] for prog_s in prog["stationProgramStatuses"] ):
+            logging.debug("filtering out step 1")
+            continue
+        if  len(variables) > 0 and not obs['variableId'] in variables :
+            logging.debug("filtering out step 2 {} {}".format(obs['variableId'],variables))
+            continue
+            
+        temp = {'id' : obs['id'] , 'name' : obs['variableName'] , 'var_id' : obs['variableId']  }
+        logging.debug("adding {}".format(temp))
+        observation_ids.append( temp )
+        
+    
+    logging.debug("extracted obs {}".format(observation_ids))
       
     
     observations = {}
     
-    for obs_id in observation_ids:
-        url_depl = "https://oscar.wmo.int/surface/rest/api//stations/deployments/{}".format(obs_id)
+    for obs in observation_ids:
+        url_depl = "https://oscar.wmo.int/surface/rest/api//stations/deployments/{}".format(obs["id"])
         r = requests.get(url_depl).json()
         
-        observations[obs_id] = [ json2schedule(dg) for depl in r for dg in depl["dataGenerations"] if ( "isInternationalExchange" in dg["reporting"] and dg["reporting"]["isInternationalExchange"] )  ]
+        schedules = [ json2schedule(dg) for depl in r for dg in depl["dataGenerations"] if ( "isInternationalExchange" in dg["reporting"] and dg["reporting"]["isInternationalExchange"] )  ]
+
+        observations[obs["var_id"]] = { 'variableName' :  obs['name'] , 'schedules' : schedules }
+        
 
     return observations
 

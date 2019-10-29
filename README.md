@@ -62,7 +62,13 @@ print("checking number expected for interval {} to {}".format(lower_boundary,upp
 
 infos = getSchedules("0-20000-0-52787",[224,])
 
-for obs_id,schedules in infos.items():
+infos = getSchedules("0-20000-0-06610" )
+
+for var_id,info in infos.items():
+    schedules = info["schedules"]
+    name = info["variableName"]
+    
     e = number_expected(schedules,lower_boundary,upper_boundary)
-    print("variable: {} expected: {} for schedules {}".format(obs_id,e,  ",".join([ str(s) for s in schedules ])  ))
+    print("variable: {} ({}) expected: {} for schedules {}".format(var_id,name,e,  ",".join([ str(s) for s in schedules ])  ))
+
 ```
