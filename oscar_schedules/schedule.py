@@ -102,7 +102,7 @@ class Schedule:
             
         }
     
-        return "from {month_from}-{month_to}/{week_from}-{week_to}/{hour_from}:{min_from}-{hour_to}:{min_to} {interval}".format(
+        return "{month_from}-{month_to}/{week_from}-{week_to}/{hour_from}:{min_from}-{hour_to}:{min_to} {interval}".format(
             **temp
         )
 

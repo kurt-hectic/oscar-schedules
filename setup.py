@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='oscar-schedules',
-    version='0.4',
+    version='0.5',
     description='library to help calculating OSCAR schedules',
     author='Timo Proescholdt',
     author_email='tproescholdt@wmo.int',
