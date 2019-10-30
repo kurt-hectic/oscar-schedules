@@ -1,7 +1,7 @@
 import requests
 import logging
 
-from .schedule import Schedule
+from oscar_schedules.schedule import Schedule
 
 def getSchedules(wigos_id,variables=[]):
 
