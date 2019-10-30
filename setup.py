@@ -12,7 +12,7 @@ setup(
     url='https://github.com/kurt-hectic/oscar-schedules',
     packages=find_packages(),
     install_requires=[
-        'setuptools',
+        'setuptools','requests',
       ],
     
     )

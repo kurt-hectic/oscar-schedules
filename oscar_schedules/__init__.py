@@ -3,4 +3,4 @@ from .calculations import number_expected
 
 from .utils import oscar2schedule, getSchedules
 
-__version__ = 0.61
+__version__ = 0.62
