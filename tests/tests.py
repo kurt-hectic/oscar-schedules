@@ -404,4 +404,31 @@ class TestUnalignedWeirdSchedules(unittest.TestCase):
         self.assertEqual(r, 4 )
         
         
+class TestEqualStartStopTimeSchedules(unittest.TestCase):
+    def test_schedule(self):
+        """
+        Test schedules that have the same start and stop date
+        """
+
+        year = 2019
+        month = 3
+        day = 25 
+        hour = 0
+
+        mydate = datetime.datetime(year, month, day,hour)
+
+        lower_boundary = mydate - timedelta(hours=3)
+        upper_boundary = mydate + timedelta(hours=3)
+
+        s1 = Schedule()
+        s1.hour_from = 20
+        s1.min_from = 0
+        s1.hour_to = 20
+        s1.min_to = 00
+        s1.interval = 60*60*1 
+
+        r = number_expected([s1,],lower_boundary,upper_boundary)
+        
+        self.assertEqual(r, 6 )
+        
         

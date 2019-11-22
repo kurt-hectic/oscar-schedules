@@ -40,12 +40,19 @@ def generate_and_count(overlap_periods):
 # here we detect schedules where the from is higher than the to, which can sometimes happen 
 # when the schedule goes into the next day
 # in this case we split the schedule into two parts
+# we also test if the from and to date are the same
 def pre_process_weird_schedules(schedules):
     ret = []
     
     change = False
     
     for s in schedules:
+        
+        if s.hour_from == s.hour_to and s.min_from == s.min_to: # same start and end time.. convert the schedule into a 24h schedule
+            s.hour_from = 0
+            s.min_from = 0
+            s.hour_to = 23
+            s.min_to = 59
         
         if s.hour_from > s.hour_to or ( s.hour_from == s.hour_to and s.min_from > s.min_to  ): # if the schedule is weird
         
