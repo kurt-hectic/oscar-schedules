@@ -85,6 +85,9 @@ def json2schedule(dg):
     )
     
     return s
+    
+    
+    
 
 def oscar2schedule(row):
 
