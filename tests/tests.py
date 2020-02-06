@@ -151,7 +151,7 @@ class TestInvertedSchedules(unittest.TestCase):
 
         r = number_expected([s,],lower_boundary,upper_boundary)
 
-        self.assertEqual(r, 5 )
+        self.assertEqual(r, 6 )
         
         
         

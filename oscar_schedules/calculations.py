@@ -192,6 +192,12 @@ def number_expected(schedules,lower,upper):
             mylower = mylower if mylower >= lower else lower # take the maximum of the original lower boundary and 0:00 on the upper boundary day
             reference = reference - datetime.timedelta(days=1) # the reference point 
             periods += s.compute_overlap_periods(mylower,upper,my_reference)
+            
+            # if the schedule is weird and around the 0h synoptic interval we may have to add an additional period to the "left" of the diurnal reference
+            if upper.day != lower.day : # if upper and lower boundary are on different days, this is an indicator for              
+                logging.debug("adding additional period..")
+                periods += s.compute_overlap_periods(lower,mylower-datetime.timedelta(seconds=1),my_reference)
+                #pass
         else :
             periods += s.compute_overlap_periods(lower,upper,my_reference)
     
