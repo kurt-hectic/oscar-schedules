@@ -610,3 +610,245 @@ class TestEqualStartStopTimeSchedulesPortugal(unittest.TestCase):
         
         self.assertEqual(r, 0 )
 
+class TestScheduleLerwick(unittest.TestCase):
+    def test_schedule(self):
+        """
+        Test the schedule
+        """
+
+        year = 2021
+        month = 9
+        day = 1 
+        hour = 0
+
+        mydate = datetime.datetime(year, month, day,hour)
+
+        lower_boundary = mydate - timedelta(hours=3)
+        upper_boundary = mydate + timedelta(hours=3)
+
+        s1 = Schedule() 
+        s1.hour_from = 0
+        s1.min_from = 0
+        s1.hour_to = 23
+        s1.min_to = 59        
+        s1.interval = 60*60
+        
+        s2 = Schedule() 
+        s2.hour_from = 1
+        s2.min_from = 0
+        s2.hour_to = 0
+        s2.min_to = 59        
+        s2.interval = 60*60
+        
+        r = number_expected([s1,s2],lower_boundary,upper_boundary)
+        self.assertEqual(r, 6 )
+        
+class TestScheduleLerwickDaily(unittest.TestCase):
+    def test_schedule(self):
+        """
+        Test the schedule
+        """
+
+        year = 2021
+        month = 9
+        day = 1 
+        hour = 0
+
+        mydate = datetime.datetime(year, month, day,hour)
+
+        lower_boundary = mydate - timedelta(hours=3)
+        upper_boundary = mydate + timedelta(hours=21)
+
+        s1 = Schedule() 
+        s1.hour_from = 0
+        s1.min_from = 0
+        s1.hour_to = 23
+        s1.min_to = 59        
+        s1.interval = 60*60
+        
+        s2 = Schedule() 
+        s2.hour_from = 1
+        s2.min_from = 0
+        s2.hour_to = 0
+        s2.min_to = 59        
+        s2.interval = 60*60
+        
+        r = number_expected([s1,s2],lower_boundary,upper_boundary)
+        self.assertEqual(r, 24 )
+        
+class TestScheduleStavanger(unittest.TestCase):
+    def test_schedule(self):
+        """
+        Test the schedule
+        """
+
+        year = 2021
+        month = 9
+        day = 1 
+        hour = 0
+
+        mydate = datetime.datetime(year, month, day,hour)
+
+        lower_boundary = mydate - timedelta(hours=3)
+        upper_boundary = mydate + timedelta(hours=3)
+
+        s1 = Schedule() 
+        s1.hour_from = 0
+        s1.min_from = 0
+        s1.hour_to = 23
+        s1.min_to = 59        
+        s1.interval = 60*60
+        
+        s2 = Schedule() 
+        s2.hour_from = 3
+        s2.min_from = 0
+        s2.hour_to = 22
+        s2.min_to = 59        
+        s2.interval = 60*30
+        
+        r = number_expected([s1,s2],lower_boundary,upper_boundary)
+        self.assertEqual(r, 8 )
+        
+        year = 2021
+        month = 9
+        day = 1 
+        hour = 6
+
+        mydate = datetime.datetime(year, month, day,hour)
+
+        lower_boundary = mydate - timedelta(hours=3)
+        upper_boundary = mydate + timedelta(hours=3)
+        
+        r = number_expected([s1,s2],lower_boundary,upper_boundary)
+        self.assertEqual(r, 12 )
+
+class TestScheduleStavangerDaily(unittest.TestCase):
+    def test_schedule(self):
+        """
+        Test the schedule
+        """
+
+        year = 2021
+        month = 9
+        day = 1 
+        hour = 0
+
+        mydate = datetime.datetime(year, month, day,hour)
+
+        lower_boundary = mydate - timedelta(hours=3)
+        upper_boundary = mydate + timedelta(hours=21)
+
+        s1 = Schedule() 
+        s1.hour_from = 0
+        s1.min_from = 0
+        s1.hour_to = 23
+        s1.min_to = 59        
+        s1.interval = 60*60
+        
+        s2 = Schedule() 
+        s2.hour_from = 3
+        s2.min_from = 0
+        s2.hour_to = 22
+        s2.min_to = 59        
+        s2.interval = 60*30
+        
+        r = number_expected([s1,s2],lower_boundary,upper_boundary)
+        self.assertEqual(r, 44 )
+
+class TestScheduleForum(unittest.TestCase):
+    def test_schedule(self):
+        """
+        Test the schedule
+        """
+
+        year = 2021
+        month = 9
+        day = 1 
+        hour = 18
+
+        mydate = datetime.datetime(year, month, day,hour)
+
+        lower_boundary = mydate - timedelta(hours=3)
+        upper_boundary = mydate + timedelta(hours=3)
+
+        s1 = Schedule() 
+        s1.hour_from = 20
+        s1.min_from = 0
+        s1.hour_to = 19
+        s1.min_to = 59        
+        s1.interval = 60*60*3
+        
+        r = number_expected([s1],lower_boundary,upper_boundary)
+        self.assertEqual(r, 2 )
+
+class TestScheduleCilacap(unittest.TestCase):
+    def test_schedule(self):
+        """
+        Test the schedule
+        """
+
+        year = 2021
+        month = 9
+        day = 1 
+        hour = 0
+
+        mydate = datetime.datetime(year, month, day,hour)
+
+        lower_boundary = mydate - timedelta(hours=3)
+        upper_boundary = mydate + timedelta(hours=3)
+
+        s1 = Schedule() 
+        s1.hour_from = 0
+        s1.min_from = 0
+        s1.hour_to = 11
+        s1.min_to = 59        
+        s1.interval = 60*60*24
+        
+        r = number_expected([s1],lower_boundary,upper_boundary)
+        self.assertEqual(r, 1 ) 
+        
+        year = 2021
+        month = 9
+        day = 1 
+        hour = 12
+
+        mydate = datetime.datetime(year, month, day,hour)
+
+        lower_boundary = mydate - timedelta(hours=3)
+        upper_boundary = mydate + timedelta(hours=3)
+
+        s1 = Schedule() 
+        s1.hour_from = 0
+        s1.min_from = 0
+        s1.hour_to = 11
+        s1.min_to = 59        
+        s1.interval = 60*60*24
+        
+        r = number_expected([s1],lower_boundary,upper_boundary)
+        self.assertEqual(r, 0)      
+        
+class TestScheduleCilacapDaily(unittest.TestCase):
+    def test_schedule(self):
+        """
+        Test the schedule
+        """
+
+        year = 2021
+        month = 9
+        day = 1 
+        hour = 0
+
+        mydate = datetime.datetime(year, month, day,hour)
+
+        lower_boundary = mydate - timedelta(hours=3)
+        upper_boundary = mydate + timedelta(hours=21)
+
+        s1 = Schedule() 
+        s1.hour_from = 0
+        s1.min_from = 0
+        s1.hour_to = 11
+        s1.min_to = 59        
+        s1.interval = 60*60*24
+        
+        r = number_expected([s1],lower_boundary,upper_boundary)
+        self.assertEqual(r, 1 )
