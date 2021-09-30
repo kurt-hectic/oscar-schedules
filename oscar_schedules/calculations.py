@@ -19,7 +19,7 @@ def lcm_mult(a):
         
         
 def lcm(a, b):
-    return abs(a*b) // fractions.gcd(a, b)
+    return abs(a*b) // math.gcd(a, b)
     
 
 def generate_and_count(overlap_periods):
@@ -37,7 +37,52 @@ def generate_and_count(overlap_periods):
         
         
         #raise Exception("non trivial overlapping schedules not yet implemented")
-     
+ 
+ 
+def align_diurnal_times(schedules):
+    """This method aligns the diurnal times of schedules
+    """
+    
+    logger.debug("align_diurnal_times enter: {}".format([str(s) for s in schedules]))
+    
+    if len(schedules)<2:
+        return schedules
+        
+    base = 100000000
+    idx = 0
+    for i,schedule in enumerate(schedules): # find the smallest diurnal offset
+        if schedule.diurnal_hour * 60 + schedule.diurnal_min < base:
+            idx = i
+            base = schedule.diurnal_hour * 60 + schedule.diurnal_min
+        
+    base_schedule = schedules[idx]
+    base_diurnal_time = datetime.datetime(1981,1,25, base_schedule.diurnal_hour, base_schedule.diurnal_min)
+    
+    for schedule in schedules:
+        temp_diurnal_time = datetime.datetime(1981,1,25, schedule.diurnal_hour, schedule.diurnal_min)
+        temp_from = datetime.datetime(1981,1,25, schedule.hour_from, schedule.min_from)
+        temp_to = datetime.datetime(1981,1,25, schedule.hour_to, schedule.min_to)
+        
+        diff = (temp_diurnal_time-base_diurnal_time).total_seconds() 
+        
+        temp_diurnal_time -= datetime.timedelta(seconds=diff)
+        temp_from -= datetime.timedelta(seconds=diff)
+        temp_to -= datetime.timedelta(seconds=diff)
+        
+        schedule.diurnal_hour = base_diurnal_time.hour
+        schedule.diurnal_min = base_diurnal_time.minute
+        
+        schedule.hour_from = temp_from.hour
+        schedule.min_from = temp_from.minute
+        
+        schedule.hour_to = temp_to.hour
+        schedule.min_to = temp_to.minute
+        
+    logger.debug("align_diurnal_times end: {}".format([str(s) for s in schedules]))
+  
+    return schedules
+    
+ 
 def pre_process_weird_schedules(schedules):
     """This method detects schedules where the from is higher than the to, which can sometimes happen 
     when the schedule goes into the next day. In this case we split the schedule into two parts.
@@ -142,7 +187,7 @@ def pre_process_weird_schedules(schedules):
         
 
 
-def number_expected(schedules,lower,upper):
+def number_expected(schedules,lower,upper,method="ANALYTIC"):
     """Computes the number of expected observations in the specified interval for the schedules.
     
     schedules -- a list of schedules of type Schedule. If a single Schedule is passed it is converted into a list
@@ -151,6 +196,9 @@ def number_expected(schedules,lower,upper):
     
     Observations resulting from multiple schedules are only counted once.
     """
+    
+    if method not in ["ANALYTIC","GENERATE"]:
+        raise ValueError("method needs to be either ANALYTIC or GENERATE, is {}".format(method))
     
     # some sanity checking of arguments
     if not type(lower) in (datetime.datetime, datetime.date) or not type(upper) in (datetime.datetime, datetime.date) :
@@ -165,7 +213,10 @@ def number_expected(schedules,lower,upper):
             
     if len(schedules)==0:
         raise ValueError("pass at least one schedule")
-
+        
+    # align diurnal offsets 
+    schedules = align_diurnal_times(schedules)
+   
     tmp = [ "{diurnal_hour}:{diurnal_min}".format(**s.__dict__) for s in schedules ]
     if not len(tmp) == tmp.count(tmp[0]): # all diurnal times are the same
         raise ValueError("schedules with different diurnal basetimes are currently not supported") #TODO: use generate_and_count to handle this
@@ -173,6 +224,12 @@ def number_expected(schedules,lower,upper):
         my_schedule=schedules[0]
         reference =  datetime.datetime(upper.year,upper.month,upper.day,my_schedule.diurnal_hour,my_schedule.diurnal_min)
 
+    if (upper - lower).total_seconds() / 60 * 60 == 24 : # daily interval
+        ret = 0
+        for l in [ lower + datetime.timedelta(hours=x) for x in range(0,24,6) ]:
+            ret += number_expected(schedules, l, l + datetime.timedelta(hours=6))
+            
+        return ret
     
     # all good, start calculations now
     logger.debug("computing nr exp (begin):  lower:{}, upper:{} , schedules: {} ".format(lower,upper,",".join( [ str(s) for s in schedules]  )))
@@ -209,7 +266,7 @@ def number_expected(schedules,lower,upper):
             if min(periods[i]['to'],periods[j]['to'])  >=  max(periods[j]['from'], periods[i]['from']):
                 overlap[i] = True
                 overlap[j] = True
-                break
+                #break
                 
     logger.debug("overlap is: {}".format(overlap))        
     # calculate number observations 
@@ -228,6 +285,7 @@ def number_expected(schedules,lower,upper):
             overlap_periods.append(p)
         i+=1
     
+    logger.debug("overlap_periods {}".format(overlap_periods))
     if len(overlap_periods) > 0:
         
         if lower.date() == upper.date() :
@@ -237,21 +295,26 @@ def number_expected(schedules,lower,upper):
             temp[lower.date()] = []
             temp[upper.date()] = []
             
-            for op in overlap_periods:
-                temp[op['from'].date()].append(op) #group by date
+            #for op in overlap_periods:
+            #    temp[op['from'].date()].append(op) #group by date
         
-            overlap_periods_wrapper = [ temp[upper.date()] , temp[lower.date()] ]
+            #overlap_periods_wrapper = [ temp[upper.date()] , temp[lower.date()] ]
+            overlap_periods_wrapper = [ overlap_periods , ]
+            
         
+        logger.debug("overlap_periods_wrapper {}".format(overlap_periods_wrapper))
         for overlap_periods in overlap_periods_wrapper:
             # observations in periods with overlap
             # first get "overlap-points"
+            logger.debug("calculating res for overlap periods {}".format(overlap_periods))
             overlap_points = []
             for op in overlap_periods:
                 overlap_points += [ op['from'] , op['to'] ]
 
             overlap_points = list(set(overlap_points)) # get unique set of overlap points
-            if len(overlap_points) == 2 : #
+            if len(overlap_points) == 2 and method == "ANALYTIC": #
                 # depending on how many schedules we have we can use our equations or need to compute
+                
                 if len(overlap_periods) == 2:
                     logger.debug("step 2 with 2")
                     start_a = overlap_periods[0]['from']
@@ -267,7 +330,11 @@ def number_expected(schedules,lower,upper):
                     nr_dupes = math.ceil((end_a - start_a).total_seconds() / lcm(freq_a,freq_b))
                     logger.debug("nr_a: {} , nr_b: {} , freq_a:{} , freq_b:{}".format(nr_a,nr_b,freq_a,freq_b))
 
-                    ret += nr_a+nr_b-nr_dupes
+                    r_temp = nr_a+nr_b-nr_dupes
+
+                    ret += r_temp
+                    logger.debug("result_addition_2: overlap periods: {}, res: {}".format(overlap_periods,r_temp))
+
 
                 elif len(overlap_periods) == 3:
                     logger.debug("step 2 with 3")
@@ -292,14 +359,22 @@ def number_expected(schedules,lower,upper):
 
                     nr_dupes_abc = math.ceil((end_a - start_a).total_seconds() / lcm_mult([freq_a,freq_b,freq_c]))
 
-                    ret +=  (nr_a + nr_b + nr_c) - (nr_dupes_ab + nr_dupes_ac + nr_dupes_bc) + nr_dupes_abc
+                    r_temp = (nr_a + nr_b + nr_c) - (nr_dupes_ab + nr_dupes_ac + nr_dupes_bc) + nr_dupes_abc
+
+                    ret +=  r_temp
+                    logger.debug("result_addition_3: overlap periods: {}, res: {}".format(overlap_periods,r_temp))
 
                 else: # we generate points, de-duplicate them and count 
-                    ret += generate_and_count(overlap_periods)
+                    r_temp = generate_and_count(overlap_periods)
+                    ret += r_temp
+                    logger.debug("result_addition_gencount: overlap periods: {}, res: {}".format(overlap_periods,r_temp))
 
             else:
                 # we generate points, de-duplicate them and count
-                ret += generate_and_count(overlap_periods)
+                r_temp = generate_and_count(overlap_periods) 
+                ret += r_temp
+                logger.debug("result_addition_gencout_outer: overlap periods: {}, res: {}".format(overlap_periods,r_temp))
+
     
     ret = math.floor(ret)
     logger.debug("ret {}".format(ret))

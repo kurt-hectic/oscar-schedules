@@ -1,6 +1,7 @@
 import datetime
 import logging
 import calendar
+import math
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 logger = logging.getLogger()
@@ -11,7 +12,7 @@ class Schedule:
     STATUS_OP = "operational"
 
     def compute_overlap_period_day(self, lower, upper, mydate):
-        #logger.debug("compute overlap: lower: {} upper:{} and {} on {} ".format(lower,upper,self,mydate))
+        logger.debug("compute overlap day: lower: {} upper:{} and {} on {} ".format(lower,upper,self,mydate))
         # check if candidate schedule is possible on the date
         if mydate.month < self.month_from or mydate.month > self.month_to:
             return None
@@ -28,6 +29,26 @@ class Schedule:
 
         max_lower = max(cand_lower, lower)
         min_upper = min(cand_upper, upper)
+        
+        ### increase the lower boundary if 
+        t = datetime.datetime( mydate.year, mydate.month, mydate.day, self.diurnal_hour, self.diurnal_min )
+        diff = (max(max_lower,t) - min(max_lower,t)).total_seconds()  # diff in seconds
+        
+        if diff > 0 and self.isweird and ( self.diurnal_hour > 0 or self.diurnal_min > 0 ) :
+        
+            remainder_sec = diff % self.interval
+            
+            offset_hour = int(math.floor(remainder_sec / (60*60)))
+            offset_min = int((remainder_sec % (60*60) ) / 60 )
+            
+            
+            #print("XX: {} {} {} {}".format(max_lower,min_upper,self.diurnal_hour,self.diurnal_min))
+            #print("XX: {} {} {}".format(diff,offset_hour,offset_min))
+
+            max_lower += datetime.timedelta(hours=offset_hour,minutes=offset_min)
+
+            #print("XX: {}".format(max_lower))
+
 
         if max_lower <= min_upper:  # overlap
             return {"from": max_lower, "to": min_upper, "interval": self.interval}
@@ -69,7 +90,8 @@ class Schedule:
             if offset.total_seconds() != 60*60*3:
                 lower = lower + offset
                 
-        if lower.date() == upper.date():  # period is on same day
+        if lower.date() == upper.date()  : # OR schedule on one day # period is on same day
+            logger.debug("period is on same day")
             mydate = lower.date()
 
             s = self.compute_overlap_period_day(lower, upper, mydate)
@@ -77,9 +99,13 @@ class Schedule:
                 schedules.append(s)
 
         else:  # critical period as it overlaps two days
+            logger.debug("critical period as it overlaps two days")
 
             left_period = self.compute_overlap_period_day(lower, upper, lower.date())
             right_period = self.compute_overlap_period_day(lower, upper, upper.date())
+            
+            logger.debug("left {}".format(left_period))
+            logger.debug("right {}".format(right_period))
 
             if left_period and right_period:  # check if valid in both periods. If yes, construct a single period
                 if left_period["to"] + datetime.timedelta(minutes=1) == right_period["from"]:  # continuous
@@ -92,7 +118,7 @@ class Schedule:
             elif right_period:  # but not left
                 schedules.append(right_period)
 
-        logger.debug("result: {}".format(schedules))
+        logger.debug("compute_overlap_periods result: {}".format(schedules))
 
         return schedules
         
