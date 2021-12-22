@@ -8,18 +8,20 @@ def getSchedules(wigos_id,variables=[]):
     url = "https://oscar.wmo.int/surface/rest/api/search/station?wigosId={}".format(wigos_id)
     r = requests.get(url).json()
     
-    if len(r) == 0 :
+    total_count = r["totalCount"]
+    
+    if total_count == 0 :
         msg = "Station {} not found".format(wigos_id)
         logging.error(msg)
         raise ValueError(msg)
     
-    if len(r) != 1  :
+    if total_count > 1  :
         msg = "{} not unique.. got {} results".format(wigos_id,len(r))
         logging.error(msg)
         raise ValueError(msg)
 
-    internal_id = r[0]['id']
-    name = r[0]['name']
+    internal_id = r["stationSearchResults"][0]['id']
+    name = r["stationSearchResults"][0]['name']
     
     logging.debug("got inernal id {} for {}".format(internal_id,wigos_id))
     
