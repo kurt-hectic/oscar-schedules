@@ -36,7 +36,7 @@ def getSchedules(wigos_id,variables=[]):
     observation_ids = []
     for obs in r:
         logging.debug("checking {}".format(obs))
-        if not any(  prog_s["declaredStatusName"] == "Operational" for prog in obs["programs"] for prog_s in prog["stationProgramStatuses"] ):
+        if not any(  prog_s["declaredStatusName"] in ["Operational","Partly operational"] for prog in obs["programs"] for prog_s in prog["stationProgramStatuses"] ):
             logging.debug("filtering out step 1")
             continue
         if  len(variables) > 0 and not obs['variableId'] in variables :
